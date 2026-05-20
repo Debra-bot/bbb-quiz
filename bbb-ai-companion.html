@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BBB AI Research Companion — DebraAnne.com</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1A2B4C;--rose:#D4537E;--rose-lt:#E8759A;
+  --teal:#40C4D4;--teal-dk:#2FA8B8;
+  --cream:#FAF8F4;--cream2:#F0EDE6;--blush:#FDF0F4;
+  --white:#FFFFFF;--ink:#2C2C2C;--ink-lt:#666666;--border:#E8E4DC;
+  --purple:#534AB7;--purple-lt:#EEEDFE;--teal-lt:#E8F8FA;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+/* ── FULL-HEIGHT APP SHELL ── */
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Lato',sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;}
+
+/* NAV — compact */
+nav{background:var(--navy);padding:0.6rem 1.25rem;display:flex;
+  align-items:center;justify-content:space-between;flex-shrink:0;}
+.nav-brand{font-family:'Playfair Display',serif;font-size:0.95rem;color:var(--white);
+  text-decoration:none;font-weight:700;line-height:1.2;}
+.nav-sub{font-size:0.62rem;color:var(--rose);letter-spacing:0.08em;display:block;}
+.nav-kit{font-size:0.72rem;color:rgba(255,255,255,0.4);font-style:italic;}
+
+/* PROGRESS */
+.prog-bar{height:3px;background:var(--border);flex-shrink:0;}
+.prog-fill{height:100%;background:var(--rose);transition:width 0.4s ease;width:0%;}
+
+/* STEP DOTS */
+.steps{display:flex;align-items:center;justify-content:center;padding:0.6rem 1rem;
+  background:var(--white);border-bottom:1px solid var(--border);flex-shrink:0;gap:0;}
+.step-wrap{display:flex;flex-direction:column;align-items:center;}
+.step-dot{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);
+  background:var(--white);display:flex;align-items:center;justify-content:center;
+  font-size:0.65rem;font-weight:700;color:var(--ink-lt);transition:all 0.3s;flex-shrink:0;}
+.step-dot.active{border-color:var(--rose);background:var(--rose);color:var(--white);}
+.step-dot.done{border-color:var(--teal);background:var(--teal);color:var(--white);}
+.step-line{width:36px;height:2px;background:var(--border);transition:background 0.3s;}
+.step-line.done{background:var(--teal);}
+.step-lbl{font-size:0.62rem;color:var(--ink-lt);margin-top:3px;display:block;}
+
+/* MAIN SCROLLABLE AREA */
+.wizard-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.wizard-inner{max-width:640px;margin:0 auto;padding:1.1rem 1.25rem 0.5rem;}
+
+/* BOTTOM ACTION BAR — always visible */
+.action-bar{flex-shrink:0;background:var(--white);border-top:1px solid var(--border);
+  padding:0.85rem 1.25rem;display:flex;gap:0.65rem;max-width:640px;
+  margin:0 auto;width:100%;}
+.action-bar-outer{background:var(--white);border-top:1px solid var(--border);flex-shrink:0;}
+.btn-back{padding:0.75rem 1.1rem;background:transparent;color:var(--navy);
+  border:1.5px solid var(--border);border-radius:50px;font-family:'Lato',sans-serif;
+  font-size:0.88rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:all 0.2s;}
+.btn-back:hover{border-color:var(--navy);}
+.btn-main{flex:1;padding:0.75rem;background:var(--rose);color:var(--white);
+  border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:0.9rem;
+  font-weight:700;cursor:pointer;transition:background 0.2s;white-space:nowrap;}
+.btn-main:hover{background:var(--rose-lt);}
+.btn-main:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-navy{flex:1;padding:0.75rem;background:var(--navy);color:var(--white);
+  border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:0.88rem;
+  font-weight:700;cursor:pointer;transition:background 0.2s;text-decoration:none;
+  text-align:center;display:flex;align-items:center;justify-content:center;}
+.btn-navy:hover{background:#253D5E;}
+
+/* SCREENS */
+.screen{display:none;}.screen.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.screen.active{animation:fadeUp 0.3s ease both;}
+
+.screen-eye{font-size:0.68rem;font-weight:700;letter-spacing:0.16em;
+  text-transform:uppercase;color:var(--rose);margin-bottom:0.4rem;display:block;}
+.screen-h{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3vw,1.55rem);
+  font-weight:700;color:var(--navy);line-height:1.3;margin-bottom:0.35rem;}
+.screen-sub{font-size:0.88rem;color:var(--ink-lt);line-height:1.65;margin-bottom:1rem;}
+
+/* PILLAR CARDS */
+.pillar-cards{display:flex;flex-direction:column;gap:0.6rem;}
+.pillar-card{background:var(--white);border:2px solid var(--border);border-radius:12px;
+  padding:1rem 1.1rem;cursor:pointer;transition:all 0.2s;
+  display:flex;align-items:center;gap:0.9rem;}
+.pillar-card:hover,.pillar-card.brains:hover{border-color:var(--purple);background:var(--purple-lt);}
+.pillar-card.boobs:hover{border-color:var(--rose);background:var(--blush);}
+.pillar-card.bones:hover{border-color:var(--teal-dk);background:var(--teal-lt);}
+.pillar-card.selected.brains{border-color:var(--purple);background:var(--purple-lt);}
+.pillar-card.selected.boobs{border-color:var(--rose);background:var(--blush);}
+.pillar-card.selected.bones{border-color:var(--teal-dk);background:var(--teal-lt);}
+.p-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:1.4rem;flex-shrink:0;}
+.brains .p-icon{background:var(--purple-lt);}
+.boobs  .p-icon{background:var(--blush);}
+.bones  .p-icon{background:var(--teal-lt);}
+.p-info h3{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;
+  color:var(--navy);margin-bottom:0.15rem;}
+.p-info p{font-size:0.78rem;color:var(--ink-lt);line-height:1.4;}
+
+/* PROMPT LIST */
+.prompt-list{display:flex;flex-direction:column;gap:0.45rem;}
+.prompt-item{background:var(--white);border:1.5px solid var(--border);border-radius:10px;
+  padding:0.8rem 1rem;cursor:pointer;text-align:left;font-family:'Lato',sans-serif;
+  font-size:0.86rem;color:var(--ink);line-height:1.5;transition:all 0.2s;
+  display:flex;align-items:center;gap:0.6rem;width:100%;}
+.prompt-item:hover{background:var(--cream);border-color:var(--rose);}
+.prompt-item.selected.brains{background:var(--purple-lt);border-color:var(--purple);border-width:2px;}
+.prompt-item.selected.boobs{background:var(--blush);border-color:var(--rose);border-width:2px;}
+.prompt-item.selected.bones{background:var(--teal-lt);border-color:var(--teal-dk);border-width:2px;}
+.pnum{font-size:0.68rem;font-weight:700;color:var(--ink-lt);min-width:16px;flex-shrink:0;}
+
+/* FIELDS */
+.prompt-ref{border-left:3px solid var(--rose);padding:0.65rem 0.9rem;
+  font-size:0.82rem;color:var(--ink-lt);line-height:1.65;margin-bottom:0.9rem;
+  font-style:italic;background:var(--cream);border-radius:0 8px 8px 0;}
+.fields{display:flex;flex-direction:column;gap:0.7rem;}
+.field label{display:block;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;
+  text-transform:uppercase;color:var(--ink-lt);margin-bottom:0.3rem;}
+.field input,.field textarea{width:100%;background:var(--white);
+  border:1.5px solid var(--border);border-radius:8px;padding:0.65rem 0.85rem;
+  color:var(--ink);font-family:'Lato',sans-serif;font-size:0.9rem;
+  resize:none;transition:border-color 0.2s;}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--rose);}
+.field input::placeholder,.field textarea::placeholder{color:var(--ink-lt);opacity:0.5;}
+
+/* RESULT */
+.result-area{background:var(--white);border:1px solid var(--border);border-radius:12px;
+  padding:1.25rem;box-shadow:0 2px 12px rgba(26,43,76,0.05);}
+.result-top-bar{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:0.75rem;}
+.result-lbl{font-size:0.68rem;font-weight:700;letter-spacing:0.14em;
+  text-transform:uppercase;color:var(--rose);}
+.result-actions-row{display:flex;gap:0.5rem;}
+.btn-copy{background:var(--cream);border:1px solid var(--border);border-radius:6px;
+  padding:0.25rem 0.65rem;color:var(--ink-lt);font-family:'Lato',sans-serif;
+  font-size:0.75rem;cursor:pointer;transition:all 0.2s;}
+.btn-copy:hover{background:var(--blush);color:var(--rose);}
+.btn-pdf{background:var(--rose);border:none;border-radius:6px;
+  padding:0.25rem 0.65rem;color:var(--white);font-family:'Lato',sans-serif;
+  font-size:0.75rem;cursor:pointer;transition:background 0.2s;}
+.btn-pdf:hover{background:var(--rose-lt);}
+.result-text{font-size:0.92rem;line-height:1.85;color:var(--ink);}
+.loading{display:flex;align-items:center;gap:0.65rem;color:var(--ink-lt);font-size:0.88rem;padding:0.5rem 0;}
+.spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--rose);
+  border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* RESULT TIP */
+.result-tip{background:var(--purple-lt);border-radius:10px;padding:0.85rem 1rem;
+  margin-top:0.85rem;font-size:0.82rem;color:var(--purple);line-height:1.6;}
+.result-tip strong{display:block;font-weight:700;margin-bottom:0.2rem;font-size:0.78rem;
+  letter-spacing:0.06em;text-transform:uppercase;}
+
+@media(max-width:480px){
+  .step-line{width:20px;}.step-lbl{display:none;}
+  .wizard-inner{padding:0.9rem 1rem 0.5rem;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://debraanne.com" class="nav-brand">debra anne<span class="nav-sub">Rewriting Menopause</span></a>
+  <span class="nav-kit">BBB AI Companion</span>
+</nav>
+
+<div class="prog-bar"><div class="prog-fill" id="prog"></div></div>
+
+<div class="steps">
+  <div class="step-wrap"><div class="step-dot active" id="d1">1</div><span class="step-lbl">Pillar</span></div>
+  <div class="step-line" id="l1"></div>
+  <div class="step-wrap"><div class="step-dot" id="d2">2</div><span class="step-lbl">Topic</span></div>
+  <div class="step-line" id="l2"></div>
+  <div class="step-wrap"><div class="step-dot" id="d3">3</div><span class="step-lbl">Details</span></div>
+  <div class="step-line" id="l3"></div>
+  <div class="step-wrap"><div class="step-dot" id="d4">4</div><span class="step-lbl">Result</span></div>
+</div>
+
+<div class="wizard-body">
+  <div class="wizard-inner">
+
+    <!-- STEP 1 -->
+    <div class="screen active" id="s1">
+      <span class="screen-eye">Step 1 of 4 — Choose your pillar</span>
+      <h2 class="screen-h">Which area are you exploring today?</h2>
+      <p class="screen-sub">Pick the pillar most relevant to you right now.</p>
+      <div class="pillar-cards">
+        <div class="pillar-card brains" onclick="pickPillar('brains',this)">
+          <div class="p-icon">🧠</div>
+          <div class="p-info"><h3>Brains</h3><p>Mind · nervous system · identity · mood · sleep · brain fog</p></div>
+        </div>
+        <div class="pillar-card boobs" onclick="pickPillar('boobs',this)">
+          <div class="p-icon">🌸</div>
+          <div class="p-info"><h3>Boobs</h3><p>Nourishment · protein · metabolism · blood sugar · lifestyle</p></div>
+        </div>
+        <div class="pillar-card bones" onclick="pickPillar('bones',this)">
+          <div class="p-icon">🦴</div>
+          <div class="p-info"><h3>Bones</h3><p>Strength · movement · bone density · muscle · flexibility</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="screen" id="s2">
+      <span class="screen-eye">Step 2 of 4 — Choose your topic</span>
+      <h2 class="screen-h" id="s2h">What do you want to research?</h2>
+      <p class="screen-sub">Pick the topic that fits where you are. You can come back and try others anytime.</p>
+      <div class="prompt-list" id="plist"></div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="screen" id="s3">
+      <span class="screen-eye">Step 3 of 4 — Your details</span>
+      <h2 class="screen-h" id="s3h">Tell us a little about you</h2>
+      <p class="screen-sub">Fill in what feels relevant — leave anything blank that does not apply. More detail = better result.</p>
+      <div class="prompt-ref" id="s3ref"></div>
+      <div class="fields" id="s3fields"></div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="screen" id="s4">
+      <span class="screen-eye">Step 4 of 4 — Your result</span>
+      <h2 class="screen-h" id="s4h">Your research response</h2>
+      <div class="result-area">
+        <div class="result-top-bar">
+          <span class="result-lbl" id="rlbl">Personalized research</span>
+          <div class="result-actions-row">
+            <button class="btn-copy" onclick="copyResult()">Copy text</button>
+            <button class="btn-pdf" onclick="savePdf()">Save as PDF</button>
+          </div>
+        </div>
+        <div class="loading" id="rload" style="display:none">
+          <div class="spinner"></div><span>Getting your personalized response...</span>
+        </div>
+        <div class="result-text" id="rtext"></div>
+      </div>
+      <div class="result-tip">
+        <strong>What to do with this</strong>
+        Use this as research to bring to your doctor, build on with your own notes, or save as a PDF to keep. You can go back and explore a different topic anytime.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ALWAYS-VISIBLE ACTION BAR -->
+<div class="action-bar-outer">
+  <div class="action-bar" id="abar">
+    <button class="btn-main" id="abtn" disabled onclick="advance()">Choose a pillar first</button>
+  </div>
+</div>
+
+<script>
+const prompts = {
+  brains: [
+    {
+      label: 'Brain fog & cognitive symptoms',
+      preview: 'Get research on what causes brain fog in menopause and what actually helps.',
+      fields: [
+        { id: 'symptoms', label: 'Describe your main cognitive symptoms', placeholder: 'e.g. word loss, can\'t concentrate, memory gaps, feeling scattered...', type: 'textarea' },
+        { id: 'duration', label: 'How long have you had these symptoms?', placeholder: 'e.g. 6 months, 2 years...', type: 'input' },
+        { id: 'history', label: 'Any relevant health history or medications (optional)', placeholder: 'e.g. thyroid issues, antidepressants, HRT...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Your voice is direct, evidence-based, and compassionate — like a knowledgeable friend who happens to know the research. Never use words like "journey", "empower", "holistic", "thrive", or "amazing". Always cite what the evidence says versus what is anecdotal.`,
+      buildPrompt: (f) => `I am a woman in menopause experiencing brain fog and cognitive symptoms. Specifically: ${f.symptoms}. I have had these symptoms for ${f.duration}. ${f.history ? `Relevant health history: ${f.history}.` : ''} Based on current research, what are the most evidence-supported approaches for improving cognitive symptoms during menopause? Please include: (1) what the research says about estrogen's role in cognition, (2) lifestyle interventions with the strongest evidence, (3) when it is worth talking to a doctor about hormonal or other medical options. Be specific and practical.`
+    },
+    {
+      label: 'Anxiety & nervous system',
+      preview: 'Understand the hormonal connection to anxiety and what the research supports.',
+      fields: [
+        { id: 'anxiety', label: 'Describe your anxiety symptoms', placeholder: 'e.g. racing thoughts, physical symptoms, when it hits, how new this is...', type: 'textarea' },
+        { id: 'triggers', label: 'What seems to make it worse or better?', placeholder: 'e.g. worse at night, better after exercise...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Your voice is direct, evidence-based, and compassionate. Never use words like "journey", "empower", "holistic", "thrive", or "amazing". Always distinguish between what has strong evidence versus what is promising but preliminary.`,
+      buildPrompt: (f) => `I am a woman in menopause experiencing anxiety. Specifically: ${f.anxiety}. ${f.triggers ? `What seems to affect it: ${f.triggers}.` : ''} What does current research say about the hormonal connection to anxiety in menopause — specifically how estrogen fluctuation affects the nervous system? What interventions have the strongest evidence for this type of anxiety — including both lifestyle approaches and medical options? What should I ask my doctor?`
+    },
+    {
+      label: 'Sleep disruption',
+      preview: 'Get research-backed solutions for the specific sleep issues that come with menopause.',
+      fields: [
+        { id: 'sleep', label: 'Describe your sleep issues specifically', placeholder: 'e.g. wake at 3am, night sweats, can\'t fall asleep, racing thoughts...', type: 'textarea' },
+        { id: 'hours', label: 'How many hours are you typically getting?', placeholder: 'e.g. 4-5 hours, broken sleep...', type: 'input' },
+        { id: 'tried', label: 'What have you already tried?', placeholder: 'e.g. melatonin, no screens, magnesium...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Be specific and practical. Distinguish clearly between strong evidence and weaker evidence. Never use generic wellness language.`,
+      buildPrompt: (f) => `I am a woman in menopause with significant sleep disruption. Specifically: ${f.sleep}. I typically get ${f.hours}. I have already tried: ${f.tried || 'nothing specific yet'}. What does current research say about the hormonal causes of sleep disruption in menopause, and what are the most effective evidence-based interventions — ranked by strength of evidence? Include both lifestyle and medical options, and what I should discuss with my doctor.`
+    },
+    {
+      label: 'Burnout & nervous system dysregulation',
+      preview: 'Understand why push-through no longer works and what your nervous system actually needs.',
+      fields: [
+        { id: 'burnout', label: 'Describe how burnout feels for you right now', placeholder: 'e.g. wired but exhausted, can\'t switch off, emotionally flat, running on empty...', type: 'textarea' },
+        { id: 'lifestyle', label: 'Briefly describe your current stress load and lifestyle', placeholder: 'e.g. work, caregiving, sleep, support systems...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Be honest about what the research shows. Speak directly to women who have spent years overriding their body's signals and are now paying the price.`,
+      buildPrompt: (f) => `I am a woman in menopause experiencing burnout and what I would describe as nervous system dysregulation. Specifically: ${f.burnout}. My current life context: ${f.lifestyle}. What does the research say about why push-through strategies backfire specifically during menopause? What is the evidence for nervous system dysregulation as a hormonal symptom? And what specific, evidence-supported practices have the strongest research for nervous system recovery — particularly for women who have historically ignored their body's signals?`
+    },
+    {
+      label: 'Mood changes & depression',
+      preview: 'Understand the difference between hormonal mood changes and clinical depression.',
+      fields: [
+        { id: 'mood', label: 'Describe your mood symptoms', placeholder: 'e.g. irritability, low mood, crying easily, feeling unlike myself, flat...', type: 'textarea' },
+        { id: 'history2', label: 'Any previous history of depression or mood disorders?', placeholder: 'e.g. no history, previous postnatal depression, on antidepressants...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Be clinically accurate and compassionate. Help women understand the distinction between hormonal mood changes and clinical depression without minimizing either.`,
+      buildPrompt: (f) => `I am a woman in menopause experiencing mood changes. Specifically: ${f.mood}. ${f.history2 ? `Mood history: ${f.history2}.` : ''} How do I understand the difference between clinical depression and the mood changes that are specific to hormonal fluctuation in menopause? What does the research say about the most effective treatments for each? What questions should I bring to my doctor, and what should I expect from that conversation?`
+    },
+    {
+      label: 'Identity shift & reinvention',
+      preview: 'Explore the research and frameworks around identity change in midlife.',
+      fields: [
+        { id: 'identity', label: 'What feels most uncertain or unfamiliar about who you are right now?', placeholder: 'e.g. my career feels wrong, I don\'t recognize myself, my relationships are shifting...', type: 'textarea' },
+        { id: 'context', label: 'What is your life context right now?', placeholder: 'e.g. empty nest, career change, loss, relationship shifts...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Draw on psychology, neuroscience, and lifespan development research. Be honest that this is a real and well-documented experience, not a personal failing.`,
+      buildPrompt: (f) => `I am a woman in menopause experiencing significant identity shift. Specifically: ${f.identity}. My current life context: ${f.context}. What does psychology and neuroscience research say about identity change during midlife and menopause — is this documented, what drives it, and is it related to hormonal changes? What frameworks or approaches have the strongest evidence for navigating this kind of reinvention? What should I know about this phase that most women are not told?`
+    },
+    {
+      label: 'Nervous system regulation practices',
+      preview: 'Get an evidence-ranked list of what actually works for nervous system regulation.',
+      fields: [
+        { id: 'current', label: 'What do you currently do to regulate your nervous system?', placeholder: 'e.g. nothing consistent, breathing exercises, walks, meditation...', type: 'input' },
+        { id: 'constraints', label: 'What are your constraints?', placeholder: 'e.g. limited time, can\'t sit still, busy schedule, physical limitations...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Be specific and evidence-ranked. Not generic wellness advice — specific practices with research behind them.`,
+      buildPrompt: (f) => `I am a woman in menopause who wants to build a practical nervous system regulation practice. I currently do: ${f.current || 'nothing consistent'}. My constraints are: ${f.constraints || 'none specified'}. Based on current research, give me an evidence-ranked list of nervous system regulation practices that are specifically beneficial during menopause — from strongest evidence to more emerging research. For each, tell me what the research shows, how long it takes to see results, and what a realistic starting point looks like.`
+    },
+    {
+      label: 'Hormone therapy & cognitive health',
+      preview: 'Understand what the research actually says about HRT and brain function.',
+      fields: [
+        { id: 'hrt', label: 'What is your current situation with hormone therapy?', placeholder: 'e.g. never tried it, considering it, on it currently, stopped it...', type: 'input' },
+        { id: 'concerns', label: 'What are your main questions or concerns?', placeholder: 'e.g. cancer risk, timing, whether it helps brain fog...', type: 'input' },
+        { id: 'health', label: 'Any relevant health history (optional)', placeholder: 'e.g. family history of breast cancer, blood clots, cardiovascular issues...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Present the current state of the research honestly and without bias. Help women have better conversations with their doctors.`,
+      buildPrompt: (f) => `I am a woman in menopause who wants to understand what the current research says about hormone therapy and cognitive health. My current situation: ${f.hrt}. My questions and concerns: ${f.concerns}. ${f.health ? `Health history context: ${f.health}.` : ''} What does the most current research say about hormone therapy and its effects on cognitive function, brain fog, and mood? What does the timing evidence show? What are the real risks I need to understand? What specific questions should I bring to my doctor to have a productive conversation about this?`
+    },
+  ],
+
+  boobs: [
+    {
+      label: 'Protein & muscle preservation',
+      preview: 'Understand why protein matters more now and how to actually increase it.',
+      fields: [
+        { id: 'protein', label: 'Describe your typical protein intake', placeholder: 'e.g. I eat chicken at dinner, mostly plant-based, rarely track it...', type: 'input' },
+        { id: 'goals', label: 'What are your main goals?', placeholder: 'e.g. maintain muscle, lose weight, have more energy...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Be specific with numbers and practical strategies. Not generic — actual gram targets, food examples, and research citations.`,
+      buildPrompt: (f) => `I am a woman in menopause who wants to understand protein requirements and muscle preservation. My current protein intake: ${f.protein}. My main goals: ${f.goals}. What does current research say about optimal protein intake during menopause — specific gram targets, timing, distribution across meals? Why does it matter more now than before? What are the most practical strategies for increasing protein without a complete diet overhaul? Include both animal and plant-based options.`
+    },
+    {
+      label: 'Metabolism & weight changes',
+      preview: 'Understand what actually changed metabolically and what the research supports.',
+      fields: [
+        { id: 'changes', label: 'Describe the changes you have noticed', placeholder: 'e.g. belly weight, slower metabolism, clothes don\'t fit the same...', type: 'textarea' },
+        { id: 'diet', label: 'Describe your current approach to eating', placeholder: 'e.g. calorie counting, Mediterranean diet, intuitive eating, nothing specific...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Be honest about why old approaches fail and what the evidence actually supports. Do not repeat generic diet advice.`,
+      buildPrompt: (f) => `I am a woman in menopause experiencing significant metabolic changes. Specifically: ${f.changes}. My current eating approach: ${f.diet}. What does current research say about the metabolic changes during menopause — specifically what is driving them hormonally? Why do traditional calorie-restriction approaches often backfire at this stage? What dietary strategies have the strongest evidence for supporting healthy body composition during menopause — not a diet, but an evidence-based approach I can sustain?`
+    },
+    {
+      label: 'Blood sugar & energy stability',
+      preview: 'Get specific strategies for the blood sugar rollercoaster that menopause creates.',
+      fields: [
+        { id: 'bsugar', label: 'Describe your energy and blood sugar patterns', placeholder: 'e.g. crashes at 3pm, crave sugar after meals, shaky if I skip meals, energy all over the place...', type: 'textarea' },
+        { id: 'eating', label: 'Describe a typical day of eating', placeholder: 'e.g. skip breakfast, big lunch, snack in afternoon...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Be practical and specific. Help women understand the mechanism behind blood sugar changes in menopause and give them actionable strategies.`,
+      buildPrompt: (f) => `I am a woman in menopause experiencing significant blood sugar instability and energy fluctuations. Specifically: ${f.bsugar}. My typical eating pattern: ${f.eating}. What does current research say about insulin sensitivity changes during menopause — what is the hormonal mechanism? What specific eating patterns, food combinations, and meal timing strategies have the strongest evidence for stabilizing blood sugar and energy at this stage? Please include practical examples I can implement immediately.`
+    },
+    {
+      label: 'Supplements — what actually works',
+      preview: 'Get an honest, evidence-ranked guide to supplements for menopause.',
+      fields: [
+        { id: 'current_supps', label: 'What are you currently taking?', placeholder: 'e.g. vitamin D, magnesium, nothing, a multivitamin...', type: 'input' },
+        { id: 'concerns_supps', label: 'What are your main concerns or goals for supplementation?', placeholder: 'e.g. bone health, sleep, mood, energy, hot flushes...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Be rigorously honest about what has strong evidence versus what is marketed but weak. Give realistic expectations.`,
+      buildPrompt: (f) => `I am a woman in menopause evaluating my supplement approach. I am currently taking: ${f.current_supps || 'nothing'}. My main goals: ${f.concerns_supps}. Based on current research, give me an honest evidence-ranked assessment of supplements for menopause — specifically for my goals. For each supplement: what the evidence actually shows, realistic dosages, what to look for in quality, and any interactions or contraindications I should know. Include what is worth taking and what is mostly marketing.`
+    },
+    {
+      label: 'Gut health & digestion changes',
+      preview: 'Understand the gut-hormone connection and what supports it.',
+      fields: [
+        { id: 'gut', label: 'Describe your gut and digestion changes since menopause', placeholder: 'e.g. more bloating, food sensitivities, IBS symptoms, constipation...', type: 'textarea' },
+        { id: 'diet_gut', label: 'How would you describe your diet overall?', placeholder: 'e.g. mostly whole foods, lots of processed food, vegetarian, dairy-heavy...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Explain the gut-hormone connection clearly. Be practical about dietary changes.`,
+      buildPrompt: (f) => `I am a woman in menopause experiencing gut and digestive changes. Specifically: ${f.gut}. My diet overview: ${f.diet_gut}. What does current research say about the relationship between the gut microbiome and menopause — how do hormonal changes affect the gut, and how does gut health affect menopause symptoms? What dietary changes have the strongest evidence for supporting gut health specifically during menopause? What should I prioritize first?`
+    },
+    {
+      label: 'Alcohol & lifestyle habits',
+      preview: 'Get an honest look at how alcohol and other habits are affecting your symptoms.',
+      fields: [
+        { id: 'alcohol', label: 'Describe your current alcohol and caffeine habits', placeholder: 'e.g. 2-3 glasses of wine most evenings, 3 coffees a day...', type: 'input' },
+        { id: 'symptoms_alc', label: 'Which symptoms are you most concerned about?', placeholder: 'e.g. sleep, weight, hot flushes, mood, anxiety...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Be honest without being preachy. Give the research clearly and let the woman make her own informed decision.`,
+      buildPrompt: (f) => `I am a woman in menopause who wants an honest research-based understanding of how my lifestyle habits affect my symptoms. My current habits: ${f.alcohol}. My main symptom concerns: ${f.symptoms_alc}. What does current research say about alcohol during menopause — specifically its effects on sleep, weight, hot flushes, bone health, mood, and cancer risk? What about caffeine? I want the research clearly presented so I can make an informed decision — not to be told what to do.`
+    },
+    {
+      label: 'Building a nourishment framework',
+      preview: 'Get an evidence-based eating framework designed for menopause — not a diet.',
+      fields: [
+        { id: 'history_diet', label: 'Describe your history with dieting and eating', placeholder: 'e.g. yo-yo dieter, chronic restrictor, intuitive eater, never dieted...', type: 'input' },
+        { id: 'priorities', label: 'What matters most to you in how you eat?', placeholder: 'e.g. simplicity, family meals, budget, health outcomes, enjoying food...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Build a framework, not a diet. Ground everything in evidence. Acknowledge that restriction-based thinking is the wrong approach here.`,
+      buildPrompt: (f) => `I am a woman in menopause who wants to build a sustainable evidence-based nourishment framework — not another diet. My eating history: ${f.history_diet}. What matters most to me: ${f.priorities}. Based on current research, what are the core principles of eating that genuinely supports women in menopause? Frame this as a set of principles I can apply to any meal, in any situation — not a meal plan. Include what to prioritize, what to reduce, and why each recommendation has evidence behind it.`
+    },
+    {
+      label: 'Hydration & anti-inflammatory eating',
+      preview: 'Understand the role of hydration and inflammation in your menopause symptoms.',
+      fields: [
+        { id: 'water', label: 'How much water do you typically drink?', placeholder: 'e.g. 2-3 glasses a day, rarely track it, mostly tea and coffee...', type: 'input' },
+        { id: 'inflammation', label: 'Do you experience symptoms that might be inflammation-related?', placeholder: 'e.g. joint pain, bloating, fatigue, skin changes, brain fog...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Be evidence-specific. Inflammation is a real factor in menopause — explain the mechanism and the evidence clearly.`,
+      buildPrompt: (f) => `I am a woman in menopause who wants to understand hydration and inflammation. My current water intake: ${f.water}. Possible inflammation symptoms I experience: ${f.inflammation}. What does current research say about the role of inflammation during menopause — what drives it and how does it connect to the symptoms I am experiencing? What specific dietary approaches have the strongest evidence for reducing inflammation during this phase? What about hydration — how much do I actually need and why does it matter more now?`
+    },
+  ],
+
+  bones: [
+    {
+      label: 'Bone density — what is happening & what to do',
+      preview: 'Understand bone density loss in menopause and what the research says stops it.',
+      fields: [
+        { id: 'bone_history', label: 'Any known bone density issues or family history of osteoporosis?', placeholder: 'e.g. never been tested, diagnosed with osteopenia, family history...', type: 'input' },
+        { id: 'age', label: 'Your age and how long since menopause began', placeholder: 'e.g. 52, in perimenopause for 3 years...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Be specific about the rate of bone loss, the window of opportunity, and what the research shows works. Help women understand urgency without panic.`,
+      buildPrompt: (f) => `I am a woman in menopause who wants to understand bone density and what I can do about it. My bone health background: ${f.bone_history}. My age and menopause timeline: ${f.age}. What does current research say about the rate of bone density loss during menopause — when it is fastest, how significant the loss is, and what the long-term implications are? What interventions have the strongest evidence for preserving or improving bone density? Please rank by evidence strength and be specific about what "strength training" actually means for bone health — not generic exercise advice.`
+    },
+    {
+      label: 'Starting strength training — beginner plan',
+      preview: 'Get a realistic, research-based starting point for strength training.',
+      fields: [
+        { id: 'fitness', label: 'Describe your current fitness level and exercise history', placeholder: 'e.g. walk daily but no strength training, used to go to the gym, completely sedentary...', type: 'input' },
+        { id: 'equipment', label: 'What equipment or access do you have?', placeholder: 'e.g. gym membership, some dumbbells at home, nothing, resistance bands...', type: 'input' },
+        { id: 'limitations', label: 'Any injuries, joint issues, or physical limitations?', placeholder: 'e.g. bad knees, lower back pain, recent surgery...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Be practical and genuinely beginner-friendly. Give specific exercises, realistic frequency, and help women understand what counts and what does not.`,
+      buildPrompt: (f) => `I am a woman in menopause who wants to start strength training. My current level: ${f.fitness}. Equipment available: ${f.equipment}. Physical considerations: ${f.limitations || 'none'}. Based on current research, what is the minimum effective dose of strength training for bone density and muscle preservation in menopause? What does a realistic, beginner-appropriate starting program look like — specific exercises, sets, reps, and frequency? What is the most important thing to get right in the first 30 days?`
+    },
+    {
+      label: 'Muscle loss (sarcopenia) — reversing it',
+      preview: 'Understand why muscle is disappearing faster and what the research says reverses it.',
+      fields: [
+        { id: 'muscle', label: 'What have you noticed about your muscle and strength?', placeholder: 'e.g. feel weaker than I used to, arms look different, struggle with things that were easy...', type: 'textarea' },
+        { id: 'activity', label: 'Describe your current activity level', placeholder: 'e.g. mostly sedentary, walk daily, occasional yoga, used to exercise more...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Explain sarcopenia clearly — what it is, why it accelerates in menopause, and what the research shows reverses it. Be specific about the combined role of exercise and nutrition.`,
+      buildPrompt: (f) => `I am a woman in menopause concerned about muscle loss. What I have noticed: ${f.muscle}. My current activity: ${f.activity}. What does current research say about sarcopenia — what is it, why does it accelerate specifically during menopause, and how significant is the loss if left unaddressed? What combination of exercise and nutrition has the strongest evidence for reversing or slowing muscle loss? How long does it take to see results? What is the single most important thing I can start doing this week?`
+    },
+    {
+      label: 'Joint pain, stiffness & mobility',
+      preview: 'Understand the estrogen-joint connection and what actually helps.',
+      fields: [
+        { id: 'joints', label: 'Where and how do you experience joint pain or stiffness?', placeholder: 'e.g. knees in the morning, hips when I sit too long, hands, all over...', type: 'textarea' },
+        { id: 'impact', label: 'How is it affecting your daily life?', placeholder: 'e.g. can\'t exercise how I used to, hard to get up from the floor, affecting sleep...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Explain the hormonal mechanism clearly. Give evidence-based options that go beyond "just exercise more".`,
+      buildPrompt: (f) => `I am a woman in menopause experiencing joint pain and stiffness. Specifically: ${f.joints}. Impact on my life: ${f.impact}. What does current research say about the connection between estrogen decline and joint health — what is the mechanism, and why does this happen specifically in menopause? What movement approaches, nutritional strategies, and other interventions have the strongest evidence for reducing joint inflammation and improving mobility? What should I look for in terms of when to see a doctor versus manage this myself?`
+    },
+    {
+      label: 'Balance & fall prevention',
+      preview: 'Understand why balance changes in menopause and what builds it back.',
+      fields: [
+        { id: 'balance', label: 'Describe any balance issues you have noticed', placeholder: 'e.g. feel unsteady sometimes, had a fall or near-fall, generally fine but concerned...', type: 'input' },
+        { id: 'age2', label: 'Your age and activity level', placeholder: 'e.g. 55, mostly sedentary / 61, walk daily...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Connect balance to bone density and fall prevention clearly. Give specific, practical exercises.`,
+      buildPrompt: (f) => `I am a woman in menopause concerned about balance and fall prevention. My current situation: ${f.balance}. My age and activity: ${f.age2}. What does current research say about how and why balance changes during menopause — what are the hormonal and physiological mechanisms? How does this connect to bone density and fracture risk? What specific exercises and practices have the strongest evidence for improving balance and proprioception in midlife women? What is the most important thing to start with?`
+    },
+    {
+      label: 'Movement with limited time',
+      preview: 'Get the most efficient movement approach for menopause when time is the barrier.',
+      fields: [
+        { id: 'time', label: 'How much time can you realistically commit to movement per week?', placeholder: 'e.g. 20 minutes three times a week, one hour on weekends only...', type: 'input' },
+        { id: 'priorities2', label: 'What matters most to you — bone density, muscle, mood, weight, energy?', placeholder: 'List your top 2-3 priorities...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Be ruthlessly practical. Help time-constrained women understand what to prioritize and what the research shows about minimum effective doses.`,
+      buildPrompt: (f) => `I am a woman in menopause with limited time for exercise. Realistic time available: ${f.time}. My priorities: ${f.priorities2}. Based on current research, what is the most efficient approach to movement for a woman in menopause with this time constraint? What does the research say about minimum effective doses for bone density, muscle preservation, and the outcomes I have listed? Give me a specific, practical approach I can actually implement with my time constraints — not a perfect program, but the most impactful one I can realistically do.`
+    },
+    {
+      label: 'Recovery & rest — how it changes',
+      preview: 'Understand why recovery takes longer now and how to work with that.',
+      fields: [
+        { id: 'recovery', label: 'How has your recovery from exercise or physical activity changed?', placeholder: 'e.g. takes days to recover, more sore than I used to be, fatigue lasts longer...', type: 'input' },
+        { id: 'training', label: 'Describe your current exercise habits', placeholder: 'e.g. run 4 times a week, occasional yoga, just starting to exercise again...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Help women understand that slower recovery is not weakness — it is biology. Give evidence-based guidance on training structure and recovery practices.`,
+      buildPrompt: (f) => `I am a woman in menopause noticing significant changes to how I recover from physical activity. Specifically: ${f.recovery}. My current exercise habits: ${f.training}. What does current research say about exercise recovery in menopause — what changes hormonally and physiologically, and why does it take longer? What are the risks of overtraining at this stage? How should I structure exercise and rest to maximize the benefits while respecting my body's actual recovery needs? What specific recovery practices have evidence behind them?`
+    },
+    {
+      label: 'Daily movement & NEAT',
+      preview: 'Understand the role of everyday movement beyond formal exercise.',
+      fields: [
+        { id: 'daily', label: 'Describe your daily movement outside of formal exercise', placeholder: 'e.g. mostly desk-based, walk to work, on my feet all day, mostly sedentary...', type: 'input' },
+        { id: 'goal', label: 'What would you like to change about your daily movement?', placeholder: 'e.g. move more throughout the day, be less sedentary, add walks...', type: 'input' },
+      ],
+      system: `You are a knowledgeable, warm menopause research assistant writing for DebraAnne.com. Explain NEAT clearly and give practical strategies. Help women understand that consistent low-level movement has significant evidence behind it — especially in menopause.`,
+      buildPrompt: (f) => `I am a woman in menopause who wants to understand the role of daily movement — not just formal exercise — in my overall health. My current daily movement: ${f.daily}. What I want to change: ${f.goal}. What does current research say about NEAT (non-exercise activity thermogenesis) and its specific importance during menopause? How does daily movement affect metabolism, bone health, mood, and cognitive function — separate from formal exercise? What are the most practical, evidence-supported ways to increase daily movement for someone with my current lifestyle?`
+    },
+  ]
+};
+
+var PROXY_URL = 'https://YOUR-VERCEL-APP.vercel.app/api/quiz';
+var step = 1;
+var pillar = null;
+var promptIdx = null;
+
+var fallbacks = {
+  brains: "What you are describing — the fog, the anxiety, the feeling of not quite recognizing yourself — is real and it has a name. Your nervous system is under significant hormonal stress, and it is asking for a different kind of support than you have been giving it. The strategies that worked before are not designed for this phase. That is not failure. That is information. The clarity you are looking for is absolutely within reach — you just need the right tools for where you actually are right now.",
+  boobs:  "Your body is not broken — it is operating under a completely different set of rules than it was five years ago, and nobody handed you the new manual. What you eat, when you eat, and what your body actually needs has shifted significantly with your hormones. The old approach of eating less and moving more is actively working against you now. There is a version of this that feels completely different, and it starts with understanding what your body is actually asking for.",
+  bones:  "The stiffness, the fatigue, the feeling that your body has aged faster than it should — that is your musculoskeletal system responding to a drop in the hormones that used to protect it. Bone density and muscle loss both accelerate in menopause, and both are significantly reversible with the right kind of movement. You do not need to be ready. You just need to start somewhere, consistently, and your body will respond."
+};
+
+function setProgress(n) {
+  document.getElementById('prog').style.width = ((n-1)/3*100) + '%';
+  for (var i=1;i<=4;i++) {
+    var d = document.getElementById('d'+i);
+    d.className = 'step-dot' + (i<n?' done':i===n?' active':'');
+  }
+  for (var j=1;j<=3;j++) {
+    var l = document.getElementById('l'+j);
+    if(l) l.className = 'step-line' + (j<n?' done':'');
+  }
+}
+
+function showStep(n) {
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('s'+n).classList.add('active');
+  document.getElementById('wizard-body') && document.getElementById('wizard-body').scrollTo(0,0);
+  document.querySelector('.wizard-body').scrollTop = 0;
+  step = n;
+  setProgress(n);
+  updateBar();
+}
+
+function updateBar() {
+  var bar = document.getElementById('abar');
+  var btn = document.getElementById('abtn');
+  bar.innerHTML = '';
+  if (step === 1) {
+    var b = makeBtn('main', pillar ? 'Choose a topic →' : 'Choose a pillar first', !pillar, function(){showStep(2); buildPrompts();});
+    bar.appendChild(b);
+  } else if (step === 2) {
+    bar.appendChild(makeBtn('back', '← Back', false, function(){showStep(1);}));
+    bar.appendChild(makeBtn('main', promptIdx !== null ? 'Add your details →' : 'Choose a topic first', promptIdx === null, function(){showStep(3); buildFields();}));
+  } else if (step === 3) {
+    bar.appendChild(makeBtn('back', '← Back', false, function(){showStep(2);}));
+    bar.appendChild(makeBtn('main', 'Get my response →', false, function(){showStep(4); fetchResult();}));
+  } else if (step === 4) {
+    bar.appendChild(makeBtn('navy', 'Start over', false, restart));
+    bar.appendChild(makeLink('https://debraanne.com/b/menopause30dayguide', 'Get the 30-Day Reset →'));
+  }
+}
+
+function makeBtn(type, label, disabled, fn) {
+  var b = document.createElement('button');
+  b.className = type === 'back' ? 'btn-back' : type === 'navy' ? 'btn-navy' : 'btn-main';
+  b.textContent = label;
+  b.disabled = !!disabled;
+  b.addEventListener('click', fn);
+  return b;
+}
+
+function makeLink(href, label) {
+  var a = document.createElement('a');
+  a.className = 'btn-main';
+  a.href = href;
+  a.textContent = label;
+  a.style.display = 'flex';
+  a.style.alignItems = 'center';
+  a.style.justifyContent = 'center';
+  a.style.flex = '1';
+  return a;
+}
+
+function pickPillar(p, el) {
+  pillar = p;
+  promptIdx = null;
+  document.querySelectorAll('.pillar-card').forEach(function(c){c.classList.remove('selected');});
+  el.classList.add('selected');
+  updateBar();
+}
+
+function buildPrompts() {
+  var list = document.getElementById('plist');
+  list.innerHTML = '';
+  document.getElementById('s2h').textContent = ({brains:'🧠 Brains', boobs:'🌸 Boobs', bones:'🦴 Bones'}[pillar]) + ' — choose a topic';
+  prompts[pillar].forEach(function(p, i) {
+    var btn = document.createElement('button');
+    btn.className = 'prompt-item ' + pillar;
+    if (i === promptIdx) btn.classList.add('selected');
+    btn.innerHTML = '<span class="pnum">'+(i+1)+'</span><span>'+p.label+'</span>';
+    btn.addEventListener('click', function() {
+      promptIdx = i;
+      document.querySelectorAll('.prompt-item').forEach(function(b){b.classList.remove('selected');});
+      btn.classList.add('selected');
+      updateBar();
+    });
+    list.appendChild(btn);
+  });
+}
+
+function buildFields() {
+  var p = prompts[pillar][promptIdx];
+  document.getElementById('s3h').textContent = p.label;
+  var ref = document.getElementById('s3ref');
+  ref.textContent = p.preview || p.label;
+  var accentMap = {brains:'var(--purple)',boobs:'var(--rose)',bones:'var(--teal-dk)'};
+  ref.style.borderLeftColor = accentMap[pillar];
+  var wrap = document.getElementById('s3fields');
+  wrap.innerHTML = '';
+  p.fields.forEach(function(f) {
+    var div = document.createElement('div');
+    div.className = 'field';
+    var lbl = document.createElement('label');
+    lbl.textContent = f.label;
+    div.appendChild(lbl);
+    var inp = document.createElement(f.type==='textarea'?'textarea':'input');
+    if (f.type !== 'textarea') inp.type = 'text';
+    else inp.rows = 3;
+    inp.id = 'f-'+f.id;
+    inp.placeholder = f.placeholder;
+    div.appendChild(inp);
+    wrap.appendChild(div);
+  });
+}
+
+function fetchResult() {
+  var p = prompts[pillar][promptIdx];
+  var vals = {};
+  p.fields.forEach(function(f){
+    var el = document.getElementById('f-'+f.id);
+    vals[f.id] = el ? el.value.trim() : '';
+  });
+  var nameMap = {brains:'🧠 Brains research',boobs:'🌸 Boobs research',bones:'🦴 Bones research'};
+  document.getElementById('s4h').textContent = p.label;
+  document.getElementById('rlbl').textContent = nameMap[pillar];
+  document.getElementById('rtext').textContent = '';
+  document.getElementById('rload').style.display = 'flex';
+  var fullPrompt = p.system + '\n\nUser request: ' + p.buildPrompt(vals) + '\n\nWrite a comprehensive, research-based response of 350-450 words. Use plain language, short paragraphs, no bullet points, no headers. Be specific and practical. Start directly with the content. End with one practical next step.';
+  fetch(PROXY_URL, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:fullPrompt})})
+    .then(function(r){return r.ok?r.json():Promise.reject();})
+    .then(function(d){showResult(d.result||fallbacks[pillar]);})
+    .catch(function(){showResult(fallbacks[pillar]);});
+}
+
+function showResult(text) {
+  document.getElementById('rload').style.display = 'none';
+  document.getElementById('rtext').textContent = text;
+}
+
+function copyResult() {
+  var text = document.getElementById('rtext').textContent;
+  var btn = document.querySelector('.btn-copy');
+  navigator.clipboard.writeText(text).then(function(){
+    btn.textContent = 'Copied!';
+    setTimeout(function(){btn.textContent = 'Copy text';}, 2000);
+  }).catch(function(){
+    btn.textContent = 'Copy text';
+  });
+}
+
+function savePdf() {
+  var topic = document.getElementById('s4h').textContent;
+  var text = document.getElementById('rtext').textContent;
+  if (!text) return;
+  var win = window.open('', '_blank');
+  win.document.write('<html><head><title>BBB Research — '+topic+'</title><style>body{font-family:Georgia,serif;max-width:680px;margin:40px auto;padding:0 20px;color:#2C2C2C;line-height:1.8;}h1{font-size:22px;color:#1A2B4C;border-bottom:2px solid #D4537E;padding-bottom:10px;margin-bottom:20px;}p{font-size:15px;margin-bottom:16px;}.footer{margin-top:40px;font-size:12px;color:#999;border-top:1px solid #eee;padding-top:12px;}</style></head><body>');
+  win.document.write('<h1>'+topic+'</h1>');
+  text.split(/\n+/).forEach(function(para){
+    if (para.trim()) win.document.write('<p>'+para.trim()+'</p>');
+  });
+  win.document.write('<div class="footer">DebraAnne.com &middot; Rewriting Menopause &middot; BBB Starter Kit companion</div>');
+  win.document.write('</body></html>');
+  win.document.close();
+  setTimeout(function(){win.print();}, 400);
+}
+
+function restart() {
+  pillar = null; promptIdx = null;
+  document.querySelectorAll('.pillar-card').forEach(function(c){c.classList.remove('selected');});
+  document.getElementById('rtext').textContent = '';
+  showStep(1);
+}
+
+setProgress(1);
+updateBar();
+</script>
+</body>
+</html>
