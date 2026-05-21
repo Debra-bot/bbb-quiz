@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Which BBB Pillar Needs You Most? — DebraAnne.com</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1A2B4C;--rose:#D4537E;--rose-lt:#E8759A;--teal:#40C4D4;--cream:#FAF8F4;--cream2:#F0EDE6;--blush:#FDF0F4;--white:#FFFFFF;--ink:#2C2C2C;--ink-lt:#666666;--border:#E8E4DC;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Lato',sans-serif;background:var(--cream);color:var(--ink);display:flex;flex-direction:column;}
+nav{background:var(--navy);padding:0.85rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.nav-brand{font-family:'Playfair Display',serif;font-size:1rem;color:var(--white);text-decoration:none;font-weight:700;line-height:1.2;}
+.nav-sub{font-size:0.68rem;color:var(--rose);letter-spacing:0.08em;display:block;}
+.quiz-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.quiz-inner{max-width:640px;margin:0 auto;padding:1.5rem 1.25rem 2rem;}
+.screen{display:none;animation:fadeUp 0.4s ease both;}
+.screen.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+/* INTRO */
+.hero{background:var(--navy);padding:2.5rem 1.5rem 3rem;text-align:center;flex-shrink:0;}
+.eyebrow{font-size:0.72rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--rose);margin-bottom:0.75rem;display:block;}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4vw,2.4rem);font-weight:700;color:var(--white);line-height:1.2;margin-bottom:0.75rem;}
+.hero h1 em{color:var(--rose);font-style:italic;}
+.hero-sub{font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.8;max-width:480px;margin:0 auto 1.5rem;font-weight:300;}
+.hero-pills{display:flex;justify-content:center;gap:0.65rem;flex-wrap:wrap;}
+.hpill{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:50px;padding:0.35rem 1rem;font-size:0.82rem;color:rgba(255,255,255,0.78);}
+svg.wave{display:block;width:100%;height:40px;flex-shrink:0;}
+
+/* INTRO CARD */
+.intro-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:2rem;text-align:center;box-shadow:0 4px 24px rgba(26,43,76,0.08);}
+.intro-card h2{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--navy);margin-bottom:0.6rem;}
+.intro-card p{font-size:0.93rem;color:var(--ink-lt);line-height:1.8;margin-bottom:1.5rem;}
+.intro-pills{display:flex;justify-content:center;gap:0.6rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+.intro-pill{background:var(--blush);border:1px solid var(--border);border-radius:50px;padding:0.35rem 0.9rem;font-size:0.82rem;color:var(--navy);}
+.intro-meta{display:flex;justify-content:center;gap:1.5rem;font-size:0.8rem;color:var(--ink-lt);margin-bottom:1.75rem;}
+.intro-meta span::before{content:"✓  ";color:var(--teal);font-weight:700;}
+
+/* PROGRESS */
+.prog-wrap{margin-bottom:1.5rem;}
+.prog-label{display:flex;justify-content:space-between;font-size:0.78rem;color:var(--ink-lt);margin-bottom:0.45rem;}
+.prog-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--rose);border-radius:2px;transition:width 0.4s ease;}
+
+/* QUESTION CARD */
+.q-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:2rem 1.75rem;box-shadow:0 2px 16px rgba(26,43,76,0.06);}
+.q-num{font-size:0.7rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--rose);margin-bottom:0.75rem;display:block;}
+.q-text{font-family:'Playfair Display',serif;font-size:clamp(1.1rem,3vw,1.45rem);font-weight:600;color:var(--navy);line-height:1.4;margin-bottom:1.5rem;}
+.options{display:flex;flex-direction:column;gap:0.7rem;}
+.option{background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:0.95rem 1.1rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:flex-start;gap:0.85rem;}
+.option:hover{background:var(--blush);border-color:var(--rose);}
+.option.selected{background:var(--blush);border-color:var(--rose);border-width:2px;}
+.opt-letter{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:var(--ink-lt);flex-shrink:0;transition:all 0.2s;}
+.option.selected .opt-letter{background:var(--rose);border-color:var(--rose);color:var(--white);}
+.opt-text{font-size:0.93rem;line-height:1.6;color:var(--ink);padding-top:3px;}
+
+/* BUTTONS */
+.btn-start,.btn-next,.btn-submit{display:block;width:100%;padding:0.95rem;background:var(--rose);color:var(--white);border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:0.97rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;transition:background 0.2s,transform 0.2s;margin-top:1.25rem;}
+.btn-start:hover,.btn-next:hover,.btn-submit:hover{background:var(--rose-lt);transform:translateY(-2px);}
+.btn-next{opacity:0;pointer-events:none;}
+.btn-next.show{opacity:1;pointer-events:all;}
+.btn-submit:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+
+/* EMAIL SCREEN */
+.email-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:2rem 1.75rem;text-align:center;box-shadow:0 4px 24px rgba(26,43,76,0.08);}
+.email-card h2{font-family:'Playfair Display',serif;font-size:clamp(1.2rem,3vw,1.55rem);font-weight:700;color:var(--navy);line-height:1.3;margin-bottom:0.5rem;}
+.email-card h2 em{color:var(--rose);font-style:italic;}
+.email-card p{font-size:0.9rem;color:var(--ink-lt);line-height:1.75;margin-bottom:1.5rem;}
+.email-fields{display:flex;flex-direction:column;gap:0.7rem;margin-bottom:1rem;}
+.email-input{width:100%;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:0.82rem 1rem;font-family:'Lato',sans-serif;font-size:0.93rem;color:var(--ink);transition:border-color 0.2s;}
+.email-input:focus{outline:none;border-color:var(--rose);background:var(--white);}
+.email-input::placeholder{color:var(--ink-lt);opacity:0.55;}
+.email-err{font-size:0.82rem;color:var(--rose);margin-top:0.35rem;display:none;}
+.email-note{font-size:0.75rem;color:var(--ink-lt);margin-top:0.75rem;}
+
+/* LOADING */
+.loading-wrap{text-align:center;padding:3rem 1.5rem;}
+.spinner{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--rose);border-radius:50%;animation:spin 0.9s linear infinite;margin:0 auto 1.25rem;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-wrap h2{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--navy);margin-bottom:0.5rem;}
+.loading-wrap p{font-size:0.9rem;color:var(--ink-lt);}
+
+/* RESULT */
+.result-eyebrow{font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--rose);text-align:center;margin-bottom:0.6rem;display:block;}
+.result-pillar{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:700;color:var(--navy);text-align:center;margin-bottom:0.3rem;}
+.result-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:1rem;color:var(--ink-lt);text-align:center;margin-bottom:1.25rem;}
+.result-div{width:48px;height:3px;border-radius:2px;margin:0 auto 1.5rem;}
+.result-body{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.5rem;font-size:0.97rem;line-height:1.85;color:var(--ink);margin-bottom:1.25rem;box-shadow:0 2px 12px rgba(26,43,76,0.05);}
+.btn-cta{display:block;width:100%;padding:1rem;background:var(--rose);color:var(--white);border:none;border-radius:50px;font-family:'Lato',sans-serif;font-size:0.97rem;font-weight:700;cursor:pointer;text-decoration:none;text-align:center;transition:background 0.2s,transform 0.2s;margin-bottom:0.75rem;}
+.btn-cta:hover{background:var(--rose-lt);transform:translateY(-2px);}
+.btn-outline{display:block;width:100%;padding:0.9rem;background:transparent;color:var(--navy);border:1.5px solid var(--navy);border-radius:50px;font-family:'Lato',sans-serif;font-size:0.92rem;font-weight:700;cursor:pointer;text-decoration:none;text-align:center;transition:all 0.2s;margin-bottom:1.5rem;}
+.btn-outline:hover{background:var(--navy);color:var(--white);}
+.result-other{border-top:1px solid var(--border);padding-top:1.25rem;text-align:center;}
+.other-label{font-size:0.7rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-lt);margin-bottom:0.85rem;}
+.pillar-chips{display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;}
+.p-chip{background:var(--cream);border:1px solid var(--border);border-radius:50px;padding:0.4rem 1rem;font-size:0.82rem;color:var(--navy);text-decoration:none;transition:all 0.2s;}
+.p-chip:hover{background:var(--blush);border-color:var(--rose);}
+
+footer{background:var(--navy);padding:1.25rem;text-align:center;flex-shrink:0;}
+footer p{color:rgba(255,255,255,0.4);font-size:0.78rem;line-height:1.6;}
+footer a{color:var(--teal);text-decoration:none;}
+@media(max-width:480px){.quiz-inner{padding:1.25rem 1rem 1.5rem;}.q-card{padding:1.5rem 1.25rem;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://debraanne.com" class="nav-brand">debra anne<span class="nav-sub">Rewriting Menopause</span></a>
+</nav>
+
+<div class="quiz-body">
+
+  <!-- HERO (always visible on intro) -->
+  <div id="hero-section">
+    <div class="hero">
+      <span class="eyebrow">Free 3-Minute Quiz</span>
+      <h1>Which Pillar Needs<br>You <em>Most</em> Right Now?</h1>
+      <p class="hero-sub">Answer 7 honest questions and discover exactly where to focus your energy first.</p>
+      <div class="hero-pills">
+        <span class="hpill">🧠 Brains</span>
+        <span class="hpill">🌸 Boobs</span>
+        <span class="hpill">🦴 Bones</span>
+      </div>
+    </div>
+    <svg class="wave" viewBox="0 0 1440 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,0 C360,40 1080,0 1440,28 L1440,0 Z" fill="#1A2B4C"/>
+      <path d="M0,40 L1440,40 L1440,28 C1080,0 360,40 0,0 Z" fill="#FAF8F4"/>
+    </svg>
+  </div>
+
+  <div class="quiz-inner">
+
+    <!-- INTRO -->
+    <div class="screen active" id="s-intro">
+      <div class="intro-card">
+        <h2>Find Your Starting Point</h2>
+        <p>Menopause affects everything — mind, body, and how you fuel yourself. This quiz helps you identify which of the three pillars needs your attention most right now, so you know exactly where to begin.</p>
+        <div class="intro-pills">
+          <span class="intro-pill">🧠 Mind &amp; nervous system</span>
+          <span class="intro-pill">🌸 Nourishment &amp; fuel</span>
+          <span class="intro-pill">🦴 Strength &amp; foundation</span>
+        </div>
+        <div class="intro-meta">
+          <span>7 questions</span>
+          <span>3 minutes</span>
+          <span>Free result</span>
+        </div>
+        <button class="btn-start" onclick="startQuiz()">Take the Quiz Free &rarr;</button>
+      </div>
+    </div>
+
+    <!-- QUESTION -->
+    <div class="screen" id="s-question">
+      <div class="prog-wrap">
+        <div class="prog-label">
+          <span id="prog-text">Question 1 of 7</span>
+          <span id="prog-pct">0%</span>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      </div>
+      <div class="q-card">
+        <span class="q-num" id="q-num">Question 1</span>
+        <h2 class="q-text" id="q-text"></h2>
+        <div class="options" id="options"></div>
+        <button class="btn-next" id="btn-next" onclick="nextQ()">Next question &rarr;</button>
+      </div>
+    </div>
+
+    <!-- EMAIL CAPTURE -->
+    <div class="screen" id="s-email">
+      <div class="email-card">
+        <span class="eyebrow" style="color:var(--teal);">Almost there</span>
+        <h2>Your result is ready.<br>Where should we <em>send it?</em></h2>
+        <p>Enter your name and email to see your personalized result — plus free resources matched to your pillar.</p>
+        <div class="email-fields">
+          <input type="text" id="e-name" class="email-input" placeholder="Your first name" autocomplete="given-name">
+          <input type="email" id="e-email" class="email-input" placeholder="Your email address" autocomplete="email">
+        </div>
+        <p class="email-err" id="e-err">Please enter a valid email address.</p>
+        <button class="btn-submit" id="btn-submit" onclick="submitEmail()">Show Me My Result &rarr;</button>
+        <p class="email-note">&#128274; No spam. Unsubscribe anytime. We respect your privacy.</p>
+      </div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="screen" id="s-loading">
+      <div class="loading-wrap">
+        <div class="spinner"></div>
+        <h2>Reading your answers...</h2>
+        <p>Putting together your personalized result.</p>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="screen" id="s-result">
+      <span class="result-eyebrow">Your BBB result</span>
+      <h2 class="result-pillar" id="r-pillar"></h2>
+      <p class="result-sub" id="r-sub"></p>
+      <div class="result-div" id="r-div"></div>
+      <div class="result-body" id="r-body"></div>
+      <a href="https://debraanne.com/b/menopause30dayguide" class="btn-cta" id="r-cta">Get the 30-Day Reset Guide &rarr;</a>
+      <a href="https://debraanne.com/b/true-north-journal" class="btn-outline">Download the True North Journal — Free</a>
+      <div class="result-other">
+        <p class="other-label">Explore all three pillars</p>
+        <div class="pillar-chips">
+          <a href="https://debraanne.com/blog/brains" class="p-chip">🧠 Brains</a>
+          <a href="https://debraanne.com/blog/boobs" class="p-chip">🌸 Boobs</a>
+          <a href="https://debraanne.com/blog/bones" class="p-chip">🦴 Bones</a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /quiz-inner -->
+</div><!-- /quiz-body -->
+
+<footer>
+  <p>&copy; 2026 <a href="https://debraanne.com">DebraAnne.com</a> &middot; Rewriting Menopause &middot; ANCHOR Practice&trade;</p>
+</footer>
+
+<script>
+var PROXY = 'https://YOUR-VERCEL-APP.vercel.app/api/quiz';
+var ML = {
+  B: 'https://assets.mailerlite.com/jsonp/264700/forms/188089205048476820/subscribe',
+  N: 'https://assets.mailerlite.com/jsonp/264700/forms/188089696432162292/subscribe',
+  O: 'https://assets.mailerlite.com/jsonp/264700/forms/188089845372945416/subscribe'
+};
+
+var QS = [
+  {t:"What's the first thing that hits you when you wake up in the morning?",o:[{t:"My mind is already running -- anxious before I even sit up",p:'B'},{t:"I feel heavy and sluggish -- I need food but nothing sounds good",p:'N'},{t:"My body is stiff and achy before I even move",p:'O'}]},
+  {t:"Which of these sounds most like you right now?",o:[{t:"I can't remember words mid-sentence and it's starting to scare me",p:'B'},{t:"I'm eating the same way I always have but my body has completely changed",p:'N'},{t:"I know I should exercise but I'm too exhausted to start",p:'O'}]},
+  {t:"When you imagine the next 10 years, what worries you most?",o:[{t:"Losing my sharpness, my confidence, who I am",p:'B'},{t:"My health declining because I can't figure out what my body needs",p:'N'},{t:"Not being strong enough to live the life I want",p:'O'}]},
+  {t:"Which symptom do you complain about most?",o:[{t:"The mood swings, anxiety, the way I snap at people I love",p:'B'},{t:"The weight that moved in and won't leave no matter what I do",p:'N'},{t:"The joint pain, stiffness -- feeling like my body aged overnight",p:'O'}]},
+  {t:"What does a bad day look like for you lately?",o:[{t:"I can't think straight, I'm irritable, I feel like a stranger in my own life",p:'B'},{t:"I'm exhausted, bloated, and reaching for things I know aren't helping",p:'N'},{t:"I feel weak and slow -- like my body is working against me",p:'O'}]},
+  {t:"If you could fix one thing about how you feel right now, what would it be?",o:[{t:"Get my mind back -- the clarity, the calm, the confidence",p:'B'},{t:"Understand what my body actually needs and stop fighting it",p:'N'},{t:"Feel strong and capable in my body again",p:'O'}]},
+  {t:"When you think about making changes right now, what feels most true?",o:[{t:"I need to understand what's happening emotionally before I can do anything else",p:'B'},{t:"I need to figure out food and energy first -- nothing works when I'm running on empty",p:'N'},{t:"I need to start moving -- I know that's the foundation but I don't know where to start",p:'O'}]}
+];
+
+var PD = {
+  B:{name:'Brains',icon:'🧠',sub:'Your mind needs you first',color:'#D4537E',cta:'Start with the Brains pillar -- get the 30-Day Reset Guide'},
+  N:{name:'Boobs', icon:'🌸',sub:'Your body is asking for different fuel',color:'#40C4D4',cta:'Start with the Boobs pillar -- get the 30-Day Reset Guide'},
+  O:{name:'Bones', icon:'🦴',sub:'Your foundation is asking to be built',color:'#C4962A',cta:'Start with the Bones pillar -- get the 30-Day Reset Guide'}
+};
+
+var FB = {
+  B:"What you're describing -- the fog, the anxiety, the feeling of not quite recognizing yourself -- is real and it has a name. Your nervous system is under significant hormonal stress, asking for a different kind of support than you've been giving it. The strategies that worked before aren't designed for this phase. That's not failure. That's information. The clarity you're looking for is absolutely within reach.",
+  N:"Your body isn't broken -- it's operating under a completely different set of rules than it was five years ago, and nobody handed you the new manual. What you eat and what your body needs has shifted significantly with your hormones. The old approach of eating less and moving more is working against you now. There's a version of this that feels completely different.",
+  O:"The stiffness, the fatigue, the feeling that your body has aged faster than it should -- that's your musculoskeletal system responding to a drop in the hormones that used to protect it. Bone density and muscle loss both accelerate in menopause and both are significantly reversible with the right kind of movement. You don't need to be ready. You just need to start."
+};
+
+var cQ=0, ans=[], sel=null, pPillar=null;
+
+function show(id){
+  var ss=document.querySelectorAll('.screen');
+  for(var i=0;i<ss.length;i++) ss[i].classList.remove('active');
+  document.getElementById(id).classList.add('active');
+  document.querySelector('.quiz-body').scrollTop=0;
+}
+
+function startQuiz(){
+  cQ=0; ans=[]; sel=null; pPillar=null;
+  document.getElementById('hero-section').style.display='none';
+  renderQ();
+  show('s-question');
+}
+
+function shuffle(a){
+  var b=a.slice();
+  for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}
+  return b;
+}
+
+function renderQ(){
+  var q=QS[cQ];
+  var pct=Math.round((cQ/QS.length)*100);
+  document.getElementById('prog-text').textContent='Question '+(cQ+1)+' of '+QS.length;
+  document.getElementById('prog-pct').textContent=pct+'%';
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('q-num').textContent='Question '+(cQ+1);
+  document.getElementById('q-text').textContent=q.t;
+  sel=null;
+  var wrap=document.getElementById('options');
+  wrap.innerHTML='';
+  var opts=shuffle(q.o);
+  var lets=['A','B','C'];
+  for(var i=0;i<opts.length;i++){
+    var d=document.createElement('div');
+    d.className='option';
+    d.innerHTML='<div class="opt-letter">'+lets[i]+'</div><div class="opt-text">'+opts[i].t+'</div>';
+    (function(el,pillar){
+      el.addEventListener('click',function(){
+        var all=document.querySelectorAll('.option');
+        for(var j=0;j<all.length;j++) all[j].classList.remove('selected');
+        el.classList.add('selected');
+        sel=pillar;
+        document.getElementById('btn-next').classList.add('show');
+      });
+    })(d,opts[i].p);
+    wrap.appendChild(d);
+  }
+  var nb=document.getElementById('btn-next');
+  nb.classList.remove('show');
+  nb.textContent=(cQ<QS.length-1)?'Next question \u2192':'See my result \u2192';
+}
+
+function nextQ(){
+  if(!sel) return;
+  ans.push(sel);
+  if(cQ<QS.length-1){
+    cQ++;
+    renderQ();
+  } else {
+    calcResult();
+  }
+}
+
+function calcResult(){
+  var sc={B:0,N:0,O:0};
+  for(var i=0;i<ans.length;i++) sc[ans[i]]++;
+  var w='B';
+  if(sc.N>sc[w]) w='N';
+  if(sc.O>sc[w]) w='O';
+  pPillar=w;
+  document.getElementById('e-name').value='';
+  document.getElementById('e-email').value='';
+  document.getElementById('e-err').style.display='none';
+  document.getElementById('btn-submit').disabled=false;
+  document.getElementById('btn-submit').textContent='Show Me My Result \u2192';
+  show('s-email');
+}
+
+function submitEmail(){
+  var name=document.getElementById('e-name').value.trim();
+  var email=document.getElementById('e-email').value.trim();
+  var err=document.getElementById('e-err');
+  if(!email||email.indexOf('@')<1){
+    err.style.display='block';
+    return;
+  }
+  err.style.display='none';
+  var btn=document.getElementById('btn-submit');
+  btn.disabled=true;
+  btn.textContent='One moment...';
+  doSubscribe(name,email,pPillar);
+  show('s-loading');
+  doResult(pPillar);
+}
+
+function doSubscribe(name,email,pillar){
+  try{
+    var url=ML[pillar];
+    if(!url) return;
+    var cb='mlcb'+Date.now();
+    var qs='fields[email]='+encodeURIComponent(email)+'&fields[name]='+encodeURIComponent(name||'')+'&ml_submit=1&anticsrf=true&callback='+cb;
+    window[cb]=function(){try{delete window[cb];}catch(e){}var s=document.getElementById('mls'+cb);if(s&&s.parentNode)s.parentNode.removeChild(s);};
+    var sc=document.createElement('script');
+    sc.id='mls'+cb;
+    sc.src=url+'?'+qs;
+    sc.onerror=function(){try{delete window[cb];}catch(e){}if(this.parentNode)this.parentNode.removeChild(this);};
+    document.head.appendChild(sc);
+  }catch(e){}
+}
+
+function doResult(pillar){
+  var pd=PD[pillar];
+  var prompt='Write a warm 4-5 sentence quiz result for a woman whose BBB menopause quiz result is '+pd.name+'. Focus: '+pd.sub+'. Direct, plain language, no jargon. Validates her experience. Ends forward-looking. Never use journey/empower/holistic/thrive/amazing. Speak directly to her as you/your. Just the paragraph, no headline.';
+  fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt})})
+    .then(function(r){return r.ok?r.json():Promise.reject();})
+    .then(function(d){showResult(pillar,d.result||FB[pillar]);})
+    .catch(function(){showResult(pillar,FB[pillar]);});
+}
+
+function showResult(pillar,text){
+  var pd=PD[pillar];
+  document.getElementById('r-pillar').textContent=pd.icon+' '+pd.name;
+  document.getElementById('r-sub').textContent=pd.sub;
+  document.getElementById('r-div').style.background=pd.color;
+  document.getElementById('r-body').textContent=text;
+  document.getElementById('r-cta').textContent=pd.cta+' \u2192';
+  show('s-result');
+}
+
+function sendH(){try{window.parent.postMessage({height:document.body.scrollHeight+20},'*');}catch(e){}}
+if(typeof ResizeObserver!=='undefined'){new ResizeObserver(sendH).observe(document.body);}
+window.addEventListener('load',sendH);
+</script>
+</body>
+</html>
